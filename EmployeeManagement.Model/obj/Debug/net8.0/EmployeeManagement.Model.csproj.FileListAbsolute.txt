@@ -1,0 +1,11 @@
+E:\Learning\EmployeeManagement\EmployeeManagement.Model\bin\Debug\net8.0\EmployeeManagement.Model.deps.json
+E:\Learning\EmployeeManagement\EmployeeManagement.Model\bin\Debug\net8.0\EmployeeManagement.Model.dll
+E:\Learning\EmployeeManagement\EmployeeManagement.Model\bin\Debug\net8.0\EmployeeManagement.Model.pdb
+E:\Learning\EmployeeManagement\EmployeeManagement.Model\obj\Debug\net8.0\EmployeeManagement.Model.GeneratedMSBuildEditorConfig.editorconfig
+E:\Learning\EmployeeManagement\EmployeeManagement.Model\obj\Debug\net8.0\EmployeeManagement.Model.AssemblyInfoInputs.cache
+E:\Learning\EmployeeManagement\EmployeeManagement.Model\obj\Debug\net8.0\EmployeeManagement.Model.AssemblyInfo.cs
+E:\Learning\EmployeeManagement\EmployeeManagement.Model\obj\Debug\net8.0\EmployeeManagement.Model.csproj.CoreCompileInputs.cache
+E:\Learning\EmployeeManagement\EmployeeManagement.Model\obj\Debug\net8.0\EmployeeManagement.Model.dll
+E:\Learning\EmployeeManagement\EmployeeManagement.Model\obj\Debug\net8.0\refint\EmployeeManagement.Model.dll
+E:\Learning\EmployeeManagement\EmployeeManagement.Model\obj\Debug\net8.0\EmployeeManagement.Model.pdb
+E:\Learning\EmployeeManagement\EmployeeManagement.Model\obj\Debug\net8.0\ref\EmployeeManagement.Model.dll

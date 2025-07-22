@@ -1,0 +1,17 @@
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\bin\Debug\net8.0\EmployeeManagement.Service.deps.json
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\bin\Debug\net8.0\EmployeeManagement.Service.dll
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\bin\Debug\net8.0\EmployeeManagement.Service.pdb
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\bin\Debug\net8.0\EmployeeManagement.Model.dll
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\bin\Debug\net8.0\EmployeeManagement.Repository.dll
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\bin\Debug\net8.0\EmployeeManagement.Model.pdb
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\bin\Debug\net8.0\EmployeeManagement.Repository.pdb
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\obj\Debug\net8.0\EmployeeManagement.Service.csproj.AssemblyReference.cache
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\obj\Debug\net8.0\EmployeeManagement.Service.GeneratedMSBuildEditorConfig.editorconfig
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\obj\Debug\net8.0\EmployeeManagement.Service.AssemblyInfoInputs.cache
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\obj\Debug\net8.0\EmployeeManagement.Service.AssemblyInfo.cs
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\obj\Debug\net8.0\EmployeeManagement.Service.csproj.CoreCompileInputs.cache
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\obj\Debug\net8.0\Employee.23F8C8A0.Up2Date
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\obj\Debug\net8.0\EmployeeManagement.Service.dll
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\obj\Debug\net8.0\refint\EmployeeManagement.Service.dll
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\obj\Debug\net8.0\EmployeeManagement.Service.pdb
+E:\Learning\EmployeeManagement\EmployeeManagement.Service\obj\Debug\net8.0\ref\EmployeeManagement.Service.dll

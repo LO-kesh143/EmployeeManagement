@@ -1,0 +1,17 @@
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\bin\Debug\net8.0\EmployeeManagement.Repository.deps.json
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\bin\Debug\net8.0\EmployeeManagement.Repository.runtimeconfig.json
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\bin\Debug\net8.0\EmployeeManagement.Repository.dll
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\bin\Debug\net8.0\EmployeeManagement.Repository.pdb
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\bin\Debug\net8.0\EmployeeManagement.Model.dll
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\bin\Debug\net8.0\EmployeeManagement.Model.pdb
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\obj\Debug\net8.0\EmployeeManagement.Repository.csproj.AssemblyReference.cache
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\obj\Debug\net8.0\EmployeeManagement.Repository.GeneratedMSBuildEditorConfig.editorconfig
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\obj\Debug\net8.0\EmployeeManagement.Repository.AssemblyInfoInputs.cache
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\obj\Debug\net8.0\EmployeeManagement.Repository.AssemblyInfo.cs
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\obj\Debug\net8.0\EmployeeManagement.Repository.csproj.CoreCompileInputs.cache
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\obj\Debug\net8.0\Employee.9A41D833.Up2Date
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\obj\Debug\net8.0\EmployeeManagement.Repository.dll
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\obj\Debug\net8.0\refint\EmployeeManagement.Repository.dll
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\obj\Debug\net8.0\EmployeeManagement.Repository.pdb
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\obj\Debug\net8.0\EmployeeManagement.Repository.genruntimeconfig.cache
+E:\Learning\EmployeeManagement\EmployeeManagement.Repository\obj\Debug\net8.0\ref\EmployeeManagement.Repository.dll
