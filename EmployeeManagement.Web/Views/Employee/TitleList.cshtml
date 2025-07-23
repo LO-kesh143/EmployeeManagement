@@ -1,0 +1,27 @@
+﻿@model List<TitleSalaryViewModel>
+
+@{
+    ViewData["Title"] = "Title List";
+}
+
+<h2 class="text-center my-4">Title List with Min and Max Salaries</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Title</th>
+            <th>Minimum Salary</th>
+            <th>Maximum Salary</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.MinSalary.ToString("C")</td>
+                <td>@item.MaxSalary.ToString("C")</td>
+            </tr>
+        }
+    </tbody>
+</table>

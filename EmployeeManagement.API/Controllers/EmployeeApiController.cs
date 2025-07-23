@@ -4,7 +4,7 @@ using EmployeeManagement.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.API.Controllers
 {
@@ -13,66 +13,129 @@ namespace EmployeeManagement.API.Controllers
     public class EmployeeApiController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
-        private readonly IMapper _mapper;
 
-        public EmployeeApiController(IEmployeeService employeeService, IMapper mapper)
+        public EmployeeApiController(IEmployeeService employeeService)
         {
             _employeeService = employeeService;
-            _mapper = mapper;
         }
 
         // GET api/employee/list?searchName=John&title=Manager&page=1&pageSize=10
         [HttpGet("list")]
-        public async Task<IActionResult> GetEmployees(string? searchName, string? title, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> GetEmployeesList(string? searchName, string? title, int page = 1, int pageSize = 10)
         {
             var (employees, totalCount) = await _employeeService.GetEmployeesAsync(searchName, title, page, pageSize);
-            var employeeDtos = _mapper.Map<IEnumerable<EmployeeDto>>(employees);
 
-            return Ok(new
+            var data = employees.Select(e => new EmployeeDto
             {
-                TotalRecords = totalCount,
-                Data = employeeDtos
+                EmployeeId = e.EmployeeId,
+                Name = e.Name,
+                SSN = e.SSN,
+                DOB = e.DOB,
+                Address = e.Address,
+                City = e.City,
+                State = e.State,
+                Zip = e.Zip,
+                Phone = e.Phone,
+                JoinDate = e.JoinDate,
+                ExitDate = e.ExitDate,
+                Salaries = e.Salaries.Select(s => new EmployeeSalaryDto
+                {
+                    SalaryId = s.EmployeeSalaryId,
+                    EmployeeId = s.EmployeeId,
+                    Title = s.Title,
+                    Salary = s.Salary,
+                    FromDate = s.FromDate,
+                    ToDate = s.ToDate
+                }).ToList()
             });
-        }
 
-        // GET api/employee/{id}
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
-        {
-            var employee = await _employeeService.GetEmployeeByIdAsync(id);
-            if (employee == null) return NotFound();
-            return Ok(_mapper.Map<EmployeeDto>(employee));
+            if (data == null || !data.Any())
+            {
+                return NotFound("No employees found matching the criteria.");
+            }
+            else
+            {
+                return Ok(new EmployeeServiceResponse
+                {
+                    Data = data.ToList(),
+                    TotalRecords = totalCount
+                });
+            }
         }
 
         // POST api/employee/add
         [HttpPost("add")]
         public async Task<IActionResult> AddEmployee(EmployeeDto employeeDto)
         {
-            var employee = _mapper.Map<Employee>(employeeDto);
+            var employee = new Employee
+            {
+                EmployeeId = employeeDto.EmployeeId,
+                Name = employeeDto.Name,
+                SSN = employeeDto.SSN,
+                DOB = employeeDto.DOB,
+                Address = employeeDto.Address,
+                City = employeeDto.City,
+                State = employeeDto.State,
+                Zip = employeeDto.Zip,
+                Phone = employeeDto.Phone,
+                JoinDate = employeeDto.JoinDate,
+                ExitDate = employeeDto.ExitDate,
+                Salaries = employeeDto.Salaries.Select(s => new EmployeeSalary
+                {
+                    EmployeeSalaryId = s.SalaryId,
+                    EmployeeId = s.EmployeeId,
+                    Title = s.Title,
+                    Salary = s.Salary,
+                    FromDate = s.FromDate,
+                    ToDate = s.ToDate
+                }).ToList()
+            };
+
             var addedEmployee = await _employeeService.AddEmployeeAsync(employee);
-            return Ok(_mapper.Map<EmployeeDto>(addedEmployee));
+
+            var addedDto = new EmployeeDto
+            {
+                EmployeeId = addedEmployee.EmployeeId,
+                Name = addedEmployee.Name,
+                SSN = addedEmployee.SSN,
+                DOB = addedEmployee.DOB,
+                Address = addedEmployee.Address,
+                City = addedEmployee.City,
+                State = addedEmployee.State,
+                Zip = addedEmployee.Zip,
+                Phone = addedEmployee.Phone,
+                JoinDate = addedEmployee.JoinDate,
+                ExitDate = addedEmployee.ExitDate,
+                Salaries = addedEmployee.Salaries.Select(s => new EmployeeSalaryDto
+                {
+                    SalaryId = s.EmployeeSalaryId,
+                    EmployeeId = s.EmployeeId,
+                    Title = s.Title,
+                    Salary = s.Salary,
+                    FromDate = s.FromDate,
+                    ToDate = s.ToDate
+                }).ToList()
+            };
+
+            return Ok(addedDto);
         }
 
-        // PUT api/employee/update/{id}
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> Update(int id, EmployeeDto employeeDto)
+        [HttpGet("titlelist")]
+        public async Task<ActionResult<List<TitleSalaryDto>>> GetTitleSalaryList()
         {
-            if (id != employeeDto.EmployeeId)
-                return BadRequest("Employee ID mismatch");
+            var titleSalaryStats = await _employeeService.GetTitleSalarySummaryAsync();
 
-            var employee = _mapper.Map<Employee>(employeeDto);
-            var updated = await _employeeService.UpdateEmployeeAsync(employee);
-            if (updated == null) return NotFound();
+            var groupedData = titleSalaryStats
+                .GroupBy(e => e.Title)
+                .Select(group => new TitleSalaryDto
+                {
+                    Title = group.Key,
+                    MinSalary = group.Average(e => e.MinSalary),
+                    MaxSalary = group.Average(e => e.MaxSalary)
+                })
+                .ToList();
 
-            return Ok(_mapper.Map<EmployeeDto>(updated));
-        }
-
-        // DELETE api/employee/delete/{id}
-        [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var deleted = await _employeeService.DeleteEmployeeAsync(id);
-            return deleted ? Ok(new { Message = "Employee deleted successfully." }) : NotFound();
+            return Ok(groupedData);
         }
     }
 }

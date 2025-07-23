@@ -1,6 +1,9 @@
-﻿using EmployeeManagement.API.Profiles;
+﻿using EmployeeManagement.Repository.Data;
+using EmployeeManagement.Repository.Interfaces;
+using EmployeeManagement.Repository.Repositories;
+using EmployeeManagement.Service.Interfaces;
+using EmployeeManagement.Service.Services;
 using Microsoft.EntityFrameworkCore;
-using EmployeeManagement.Repository.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,23 +18,25 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//builder.Services.AddAutoMapper(typeof(EmployeeProfile).Assembly);
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // ✅ Register Controllers
 builder.Services.AddControllers();
 
 // ✅ Configure CORS if needed (optional, example shown)
-// builder.Services.AddCors(options =>
-// {
-//     options.AddPolicy("AllowAll",
-//         builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-// });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder => builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
+});
+
+// Register Repositories
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<ITitleRepository, TitleRepository>();
 
 // ✅ Register Business Services, Repositories via Dependency Injection
-// builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-// builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
 var app = builder.Build();
 
@@ -43,6 +48,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 

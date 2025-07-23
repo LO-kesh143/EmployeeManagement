@@ -1,0 +1,64 @@
+﻿@model EmployeeViewModel
+
+@{
+    ViewBag.Title = "Add Employee";
+}
+
+<h2 class="mb-4">Add New Employee</h2>
+
+<div class="mb-3 d-flex gap-2">
+    <a asp-action="EmployeeList" class="btn btn-primary">Back to List</a>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form asp-action="AddEmployee" method="post" class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="Name" class="form-label">Name</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="SSN" class="form-label">SSN</label>
+        <input asp-for="SSN" class="form-control" />
+        <span asp-validation-for="SSN" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Phone" class="form-label">Phone</label>
+        <input asp-for="Phone" class="form-control" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="City" class="form-label">City</label>
+        <input asp-for="City" class="form-control" />
+        <span asp-validation-for="City" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="State" class="form-label">State</label>
+        <input asp-for="State" class="form-control" />
+        <span asp-validation-for="State" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="JoinDate" class="form-label">Join Date</label>
+        <input asp-for="JoinDate" type="date" class="form-control" />
+        <span asp-validation-for="JoinDate" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-success">Add Employee</button>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

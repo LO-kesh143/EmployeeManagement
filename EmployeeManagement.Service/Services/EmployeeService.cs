@@ -12,16 +12,18 @@ namespace EmployeeManagement.Service.Services
 {
     public class EmployeeService : IEmployeeService
     {
-        private readonly IGenericRepository<Employee> _repo;
+        private readonly IGenericRepository<Employee> _genRepository;
+        private readonly ITitleRepository _titleRepository;
 
-        public EmployeeService(IGenericRepository<Employee> repo)
+        public EmployeeService(IGenericRepository<Employee> genRepository, ITitleRepository titleRepository)
         {
-            _repo = repo;
+            _genRepository = genRepository;
+            _titleRepository = titleRepository;
         }
 
         public async Task<(IEnumerable<Employee> Employees, int TotalCount)> GetEmployeesAsync(string? searchName, string? title, int page, int pageSize)
         {
-            var queryable = _repo.Query().Include(e => e.Salaries).AsQueryable();
+            var queryable = _genRepository.Query().Include(e => e.Salaries).AsQueryable();
 
             // Business Logic: Filtering
             if (!string.IsNullOrWhiteSpace(searchName))
@@ -41,34 +43,52 @@ namespace EmployeeManagement.Service.Services
             return (employees, totalCount);
         }
 
-        public async Task<Employee?> GetEmployeeByIdAsync(int id)
-        {
-            return await _repo.GetByIdAsync(id);
-        }
+        //public async Task<Employee?> GetEmployeeByIdAsync(int id)
+        //{
+        //    return await _genRepository.GetByIdAsync(id);
+        //}
 
         public async Task<Employee> AddEmployeeAsync(Employee employee)
         {
             // Business Logic: Prevent duplicate SSN
-            var existing = await _repo.Query().AnyAsync(e => e.SSN == employee.SSN);
+            var existing = await _genRepository.Query().AnyAsync(e => e.SSN == employee.SSN);
             if (existing)
                 throw new Exception("Employee with the same SSN already exists.");
 
-            return await _repo.AddAsync(employee);
+            return await _genRepository.AddAsync(employee);
         }
 
-        public async Task<Employee?> UpdateEmployeeAsync(Employee employee)
+        public async Task<List<ViewTitleSalary>> GetTitleSalarySummaryAsync()
         {
-            // Business Logic: JoinDate validation
-            if (employee.JoinDate > DateTime.Now)
-                throw new Exception("Join date cannot be in the future.");
+            var salaries = await _titleRepository.GetTitleSalarySummaryAsync();
 
-            return await _repo.UpdateAsync(employee);
+            var result = salaries
+                .GroupBy(s => s.Title)
+                .Select(g => new ViewTitleSalary
+                {
+                    Title = g.Key,
+                    MinSalary = g.Min(x => x.MinSalary),
+                    MaxSalary = g.Max(x => x.MaxSalary)
+                })
+                .ToList();
+
+            return result;
         }
 
-        public async Task<bool> DeleteEmployeeAsync(int id)
-        {
-            return await _repo.DeleteAsync(id);
-        }
+        //public async Task<Employee?> UpdateEmployeeAsync(Employee employee)
+        //{
+        //    // Business Logic: JoinDate validation
+        //    if (employee.JoinDate > DateTime.Now)
+        //        throw new Exception("Join date cannot be in the future.");
+
+        //    return await _genRepository.UpdateAsync(employee);
+        //}
+
+        //public async Task<bool> DeleteEmployeeAsync(int id)
+        //{
+        //    return await _genRepository.DeleteAsync(id);
+        //}
+
     }
 
 }

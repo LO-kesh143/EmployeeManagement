@@ -1,6 +1,5 @@
 ﻿using EmployeeManagement.Model.Models;
 using EmployeeManagement.Repository.Data;
-using EmployeeManagement.Repository.DTOs;
 using EmployeeManagement.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,11 +15,11 @@ namespace EmployeeManagement.Repository.Repositories
         private readonly ApplicationDbContext _context;
         public TitleRepository(ApplicationDbContext context) => _context = context;
 
-        public async Task<List<TitleSalaryDto>> GetTitleSalaryStatsAsync()
+        public async Task<List<ViewTitleSalary>> GetTitleSalarySummaryAsync()
         {
             return await _context.EmployeeSalaries
                 .GroupBy(x => x.Title)
-                .Select(g => new TitleSalaryDto
+                .Select(g => new ViewTitleSalary
                 {
                     Title = g.Key,
                     MinSalary = g.Min(x => x.Salary),

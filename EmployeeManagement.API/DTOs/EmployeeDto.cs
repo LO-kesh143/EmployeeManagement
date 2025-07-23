@@ -15,6 +15,6 @@
         public DateTime? ExitDate { get; set; }
 
         // Include salary details if needed in API responses
-        public List<EmployeeSalaryDto> Salaries { get; set; } = new List<EmployeeSalaryDto>();
+        public List<EmployeeSalaryDto> Salaries { get; set; } = new();
     }
 }
