@@ -9,11 +9,8 @@ namespace EmployeeManagement.Service.Interfaces
 {
     public interface IEmployeeService
     {
-        Task<(IEnumerable<Employee> Employees, int TotalCount)> GetEmployeesAsync(string? searchName, string? title, int page, int pageSize);
-        Task<Employee?> GetEmployeeByIdAsync(int id);
+        Task<(IEnumerable<Employee> Employees, int TotalCount)> GetEmployeesAsync(string? searchString, int page, int pageSize);
         Task<Employee> AddEmployeeAsync(Employee employee);
-        Task<Employee?> UpdateEmployeeAsync(Employee employee);
-        Task<bool> DeleteEmployeeAsync(int id);
+        Task<List<ViewTitleSalary>> GetTitleSalarySummaryAsync();
     }
-
 }

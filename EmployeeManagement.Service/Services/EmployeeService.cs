@@ -1,74 +1,130 @@
-﻿using EmployeeManagement.Model.Models;
-using EmployeeManagement.Repository.Interfaces;
-using EmployeeManagement.Service.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EmployeeManagement.Model.Models;
+using EmployeeManagement.Repository.Data;
+using EmployeeManagement.Repository.Interfaces;
+using EmployeeManagement.Service.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EmployeeManagement.Service.Services
 {
     public class EmployeeService : IEmployeeService
     {
-        private readonly IGenericRepository<Employee> _repo;
+        private readonly IGenericRepository<Employee> _empRepository;
+        private readonly IGenericRepository<EmployeeSalary> _empSalaryRepository;
+        private readonly ITitleRepository _titleRepository;
+        private readonly ILogger<EmployeeService> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public EmployeeService(IGenericRepository<Employee> repo)
+        public EmployeeService(IGenericRepository<Employee> genRepository, 
+            ITitleRepository titleRepository, ILogger<EmployeeService> logger,
+            ApplicationDbContext context, IGenericRepository<EmployeeSalary> empSalaryRepository)
         {
-            _repo = repo;
+            _empRepository = genRepository;
+            _titleRepository = titleRepository;
+            _logger = logger;
+            _context = context;
+            _empSalaryRepository = empSalaryRepository;
         }
 
-        public async Task<(IEnumerable<Employee> Employees, int TotalCount)> GetEmployeesAsync(string? searchName, string? title, int page, int pageSize)
+        public async Task<(IEnumerable<Employee> Employees, int TotalCount)> GetEmployeesAsync(string? searchString, int page, int pageSize)
         {
-            var queryable = _repo.Query().Include(e => e.Salaries).AsQueryable();
+            try
+            {
+                var queryable = _empRepository.Query().Include(e => e.Salaries).AsQueryable();
 
-            // Business Logic: Filtering
-            if (!string.IsNullOrWhiteSpace(searchName))
-                queryable = queryable.Where(e => e.Name.Contains(searchName));
+                if (!string.IsNullOrWhiteSpace(searchString))
+                    queryable = queryable.Where(e =>
+                        e.Name.Contains(searchString) ||
+                        e.Salaries.Any(s => s.Title.Contains(searchString))
+                    );
 
-            if (!string.IsNullOrWhiteSpace(title))
-                queryable = queryable.Where(e => e.Salaries.Any(s => s.Title.Contains(title)));
+                var totalCount = await queryable.CountAsync();
 
-            var totalCount = await queryable.CountAsync();
+                var employees = await queryable
+                    .OrderBy(e => e.EmployeeId)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
 
-            var employees = await queryable
-                .OrderBy(e => e.EmployeeId)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+                return (employees, totalCount);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching employee list (search: {Search}, page: {Page}, pageSize: {PageSize})", searchString, page, pageSize);
 
-            return (employees, totalCount);
-        }
-
-        public async Task<Employee?> GetEmployeeByIdAsync(int id)
-        {
-            return await _repo.GetByIdAsync(id);
+                throw new Exception("An error occurred while retrieving employee data. Please try again later.");
+            }
         }
 
         public async Task<Employee> AddEmployeeAsync(Employee employee)
         {
-            // Business Logic: Prevent duplicate SSN
-            var existing = await _repo.Query().AnyAsync(e => e.SSN == employee.SSN);
-            if (existing)
-                throw new Exception("Employee with the same SSN already exists.");
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            return await _repo.AddAsync(employee);
+            try
+            {
+                var exists = await _empRepository.Query().AnyAsync(e => e.SSN == employee.SSN);
+                if (exists)
+                    throw new ApplicationException("Employee already exists");
+
+                var createdEmployee = await _empRepository.AddAsync(employee);
+                
+                foreach (var salary in employee.Salaries)
+                {
+                    salary.EmployeeId = createdEmployee.EmployeeId;
+                    await _empSalaryRepository.AddAsync(salary);
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return createdEmployee;
+            }
+            catch (ApplicationException appEx)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogWarning(appEx, "Duplicate SSN detected while adding employee (SSN: {SSN})", employee.SSN);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex,
+                    "Error occurred while adding employee (Name: {Name}, SSN: {SSN}, JoinDate: {JoinDate})",
+                    employee.Name, employee.SSN, employee.JoinDate);
+
+                throw new Exception("An unexpected error occurred while adding employee. Please try again later.");
+            }
         }
 
-        public async Task<Employee?> UpdateEmployeeAsync(Employee employee)
+        public async Task<List<ViewTitleSalary>> GetTitleSalarySummaryAsync()
         {
-            // Business Logic: JoinDate validation
-            if (employee.JoinDate > DateTime.Now)
-                throw new Exception("Join date cannot be in the future.");
+            try
+            {
+                var salaries = await _titleRepository.GetTitleSalarySummaryAsync();
 
-            return await _repo.UpdateAsync(employee);
-        }
+                var result = salaries
+                    .GroupBy(s => s.Title)
+                    .Select(g => new ViewTitleSalary
+                    {
+                        Title = g.Key,
+                        MinSalary = g.Min(x => x.MinSalary),
+                        MaxSalary = g.Max(x => x.MaxSalary)
+                    })
+                    .ToList();
 
-        public async Task<bool> DeleteEmployeeAsync(int id)
-        {
-            return await _repo.DeleteAsync(id);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching title salary summary.");
+
+                throw new Exception("An unexpected error occurred while retrieving salary summary. Please try again later.");
+            }
         }
     }
-
 }

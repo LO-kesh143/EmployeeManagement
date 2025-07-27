@@ -20,7 +20,8 @@ namespace EmployeeManagement.Repository.Data
             modelBuilder.Entity<Employee>()
                 .HasMany(e => e.Salaries)
                 .WithOne(s => s.Employee)
-                .HasForeignKey(s => s.EmployeeId);
+                .HasForeignKey(s => s.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class EmployeeSalaryDto
     {
-        public int SalaryId { get; set; }
+        public int EmployeeSalaryId { get; set; }
         public int EmployeeId { get; set; }
         public string Title { get; set; } = string.Empty;
         public decimal Salary { get; set; }
