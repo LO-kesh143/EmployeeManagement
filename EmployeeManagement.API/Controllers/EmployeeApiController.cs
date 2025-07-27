@@ -13,18 +13,22 @@ namespace EmployeeManagement.API.Controllers
     public class EmployeeApiController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
+        private readonly ILogger<EmployeeApiController> _logger;
 
-        public EmployeeApiController(IEmployeeService employeeService)
+        public EmployeeApiController(IEmployeeService employeeService, ILogger<EmployeeApiController> logger)
         {
             _employeeService = employeeService;
+            _logger = logger;
         }
 
-        // GET api/employee/list?searchName=John&title=Manager&page=1&pageSize=10
+        // GET api/employee/list?searchString=John&title=Manager&page=1&pageSize=10
         [HttpGet("list")]
-        public async Task<IActionResult> GetEmployeesList(string? searchName, string? title, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> GetEmployeesList(string? searchString, int page = 1, int pageSize = 10)
         {
-            var (employees, totalCount) = await _employeeService.GetEmployeesAsync(searchName, title, page, pageSize);
+            _logger.LogInformation("API - Fetching all employees");
 
+            var (employees, totalCount) = await _employeeService.GetEmployeesAsync(searchString, page, pageSize);
+            _logger.LogInformation("Fetching all employees");
             var data = employees.Select(e => new EmployeeDto
             {
                 EmployeeId = e.EmployeeId,
@@ -40,7 +44,7 @@ namespace EmployeeManagement.API.Controllers
                 ExitDate = e.ExitDate,
                 Salaries = e.Salaries.Select(s => new EmployeeSalaryDto
                 {
-                    SalaryId = s.EmployeeSalaryId,
+                    EmployeeSalaryId = s.EmployeeSalaryId,
                     EmployeeId = s.EmployeeId,
                     Title = s.Title,
                     Salary = s.Salary,
@@ -49,18 +53,11 @@ namespace EmployeeManagement.API.Controllers
                 }).ToList()
             });
 
-            if (data == null || !data.Any())
+            return Ok(new EmployeeServiceResponse
             {
-                return NotFound("No employees found matching the criteria.");
-            }
-            else
-            {
-                return Ok(new EmployeeServiceResponse
-                {
-                    Data = data.ToList(),
-                    TotalRecords = totalCount
-                });
-            }
+                Data = data.ToList(),
+                TotalRecords = totalCount
+            });
         }
 
         // POST api/employee/add
@@ -82,7 +79,7 @@ namespace EmployeeManagement.API.Controllers
                 ExitDate = employeeDto.ExitDate,
                 Salaries = employeeDto.Salaries.Select(s => new EmployeeSalary
                 {
-                    EmployeeSalaryId = s.SalaryId,
+                    EmployeeSalaryId = s.EmployeeSalaryId,
                     EmployeeId = s.EmployeeId,
                     Title = s.Title,
                     Salary = s.Salary,
@@ -95,7 +92,6 @@ namespace EmployeeManagement.API.Controllers
 
             var addedDto = new EmployeeDto
             {
-                EmployeeId = addedEmployee.EmployeeId,
                 Name = addedEmployee.Name,
                 SSN = addedEmployee.SSN,
                 DOB = addedEmployee.DOB,
@@ -108,7 +104,6 @@ namespace EmployeeManagement.API.Controllers
                 ExitDate = addedEmployee.ExitDate,
                 Salaries = addedEmployee.Salaries.Select(s => new EmployeeSalaryDto
                 {
-                    SalaryId = s.EmployeeSalaryId,
                     EmployeeId = s.EmployeeId,
                     Title = s.Title,
                     Salary = s.Salary,
@@ -123,6 +118,7 @@ namespace EmployeeManagement.API.Controllers
         [HttpGet("titlelist")]
         public async Task<ActionResult<List<TitleSalaryDto>>> GetTitleSalaryList()
         {
+
             var titleSalaryStats = await _employeeService.GetTitleSalarySummaryAsync();
 
             var groupedData = titleSalaryStats
